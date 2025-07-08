@@ -11,16 +11,18 @@ import (
 
 var (
     debugMode bool
+    Version = "0.1.0" // 版本號可以從構建時注入或其他方式獲取
 )
+
 
 func main() {
     handlers.InitExecuteFunc(command.ExecuteCmd)
     rootCmd := &cobra.Command{
         Use:   "pulumiGo [command]",
         Short: "Pulumi Go Wrapper - Manage infrastructure with Pulumi",
-        Long: `Pulumi Go Wrapper is a tool that enhances Pulumi with additional capabilities.
-It allows you to manage your infrastructure as code using Pulumi commands
-while providing extra features for stack management.`,
+        Long:  fmt.Sprintf("pulumiGo v%s\n\nPulumi Go Wrapper is a tool that enhances Pulumi with additional capabilities.\n"+
+        "It allows you to manage your infrastructure as code using Pulumi commands\n"+
+        "while providing extra features for stack management.", Version),
         PersistentPreRun: func(cmd *cobra.Command, args []string) {
             if debugMode {
                 fmt.Println("Debug mode enabled")
