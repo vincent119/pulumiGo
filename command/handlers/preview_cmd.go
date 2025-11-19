@@ -1,13 +1,14 @@
 package handlers
 
 import (
-    "pulumiGo/interfaces"
-    "github.com/spf13/cobra"
+	"pulumiGo/types"
+
+	"github.com/spf13/cobra"
 )
 
 // PreviewCommand 處理 pulumi preview 命令
 type PreviewCommand struct {
-    interfaces.BaseHandler
+    types.BaseHandler
 }
 
 // NewPreviewCommand 創建新的 preview 命令處理器
@@ -20,13 +21,13 @@ func NewPreviewCommand() *PreviewCommand {
             return executeCommand(cmd, append([]string{"preview"}, args...))
         },
     }
-    
+
     // 添加 preview 命令專用的標誌
     cmd.Flags().BoolP("diff", "", false, "Display operation as a rich diff showing the overall change")
     cmd.Flags().Bool("show-sames", false, "Show resources that needn't be updated because they haven't changed")
     cmd.Flags().BoolP("json", "j", false, "Emit output as JSON")
-    
+
     return &PreviewCommand{
-        BaseHandler: interfaces.BaseHandler{Command: cmd},
+        BaseHandler: types.BaseHandler{Command: cmd},
     }
 }

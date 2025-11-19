@@ -1,13 +1,14 @@
 package handlers
 
 import (
-    "github.com/spf13/cobra"
-    "pulumiGo/interfaces"
+	"pulumiGo/types"
+
+	"github.com/spf13/cobra"
 )
 
 // StateCommand 處理 pulumi state 命令
 type StateCommand struct {
-    interfaces.BaseHandler
+    types.BaseHandler
 }
 
 // NewStateCommand 創建新的 state 命令處理器
@@ -20,9 +21,9 @@ func NewStateCommand() *StateCommand {
             return executeCommand(cmd, append([]string{"state"}, args...))
         },
     }
-    
+
     return &StateCommand{
-        BaseHandler: interfaces.BaseHandler{Command: cmd},
+        BaseHandler: types.BaseHandler{Command: cmd},
     }
 }
 
@@ -40,13 +41,13 @@ func (h *StateCommand) RegisterSubcommands(cmd *cobra.Command) {
             return executeCommand(cmd, cmdArgs)
         },
     }
-    
+
     // 為 delete 命令添加標誌
     deleteCmd.Flags().Bool("force", false, "Force deletion of protected resources")
     deleteCmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompts")
-    
+
     cmd.AddCommand(deleteCmd)
-    
+
     // 添加 protect 子命令
     protectCmd := &cobra.Command{
         Use:   "protect <resource-urn>",
@@ -59,9 +60,9 @@ func (h *StateCommand) RegisterSubcommands(cmd *cobra.Command) {
             return executeCommand(cmd, cmdArgs)
         },
     }
-    
+
     cmd.AddCommand(protectCmd)
-    
+
     // 添加 unprotect 子命令
     unprotectCmd := &cobra.Command{
         Use:   "unprotect <resource-urn>",
@@ -74,6 +75,6 @@ func (h *StateCommand) RegisterSubcommands(cmd *cobra.Command) {
             return executeCommand(cmd, cmdArgs)
         },
     }
-    
+
     cmd.AddCommand(unprotectCmd)
 }

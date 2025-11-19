@@ -1,13 +1,14 @@
 package handlers
 
 import (
-    "github.com/spf13/cobra"
-    "pulumiGo/interfaces"
+	"pulumiGo/types"
+
+	"github.com/spf13/cobra"
 )
 
 
 type OrgCommand struct {
-    interfaces.BaseHandler
+    types.BaseHandler
 }
 
 func NewOrgCommand() *OrgCommand {
@@ -20,7 +21,7 @@ func NewOrgCommand() *OrgCommand {
         },
     }
 
-    return &OrgCommand{BaseHandler: interfaces.BaseHandler{Command: cmd}}
+    return &OrgCommand{BaseHandler: types.BaseHandler{Command: cmd}}
 }
 
 func (h *OrgCommand) RegisterSubcommands(cmd *cobra.Command) {
@@ -48,7 +49,7 @@ func (h *OrgCommand) RegisterSubcommands(cmd *cobra.Command) {
             return executeCommand(cmd, cmdArgs)
         },
     }
-    
+
 
     searchCmd.Flags().StringP("org", "o", "", "Organization name to filter search results")
     searchCmd.Flags().StringP("tag", "t", "", "Filter results with the given tag")
@@ -56,7 +57,7 @@ func (h *OrgCommand) RegisterSubcommands(cmd *cobra.Command) {
     searchCmd.Flags().StringP("language", "l", "", "Filter results based on the language they use")
     searchCmd.Flags().StringP("stack", "s", "", "Filter results with the given stack name")
     searchCmd.Flags().String("resource-type", "", "Filter results with the given resource type")
-    
+
     cmd.AddCommand(searchCmd)
 
 

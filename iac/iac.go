@@ -1,14 +1,13 @@
-package iac_modules
+package iac
 
 import (
-    "encoding/json"
-    "errors"
-    "fmt"
-    "os"
-    "os/exec"
-    "strings"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"os"
+	"os/exec"
+	"strings"
 )
-
 
 // Current working directory
 var workDir string
@@ -55,20 +54,20 @@ func StackCheck() (string, error) {
 func Dump(prop string, stackName string) (map[string]interface{}, error) {
     stackPath := fmt.Sprintf("%s/stacks/%s", workDir, stackName)
     DebugLog("Attempting to read directory: %s", stackPath)
-    
+
     // Check if directory exists
     if _, err := os.Stat(stackPath); os.IsNotExist(err) {
         DebugLog("Warning: stacks/%s directory does not exist", stackName)
         return nil, fmt.Errorf("stack directory does not exist: %s", stackPath)
     }
-    
+
     final := make(map[string]interface{})
     configs, err := LoadYaml(stackPath)
     if err != nil {
         DebugLog("Failed to read YAML: %v", err)
         return nil, err
     }
-    
+
     DebugLog("Successfully read %d YAML files from %s", len(configs), stackPath)
 
     for _, config := range configs {
@@ -102,22 +101,22 @@ func Dump(prop string, stackName string) (map[string]interface{}, error) {
 func GlobalVariables() (map[string]interface{}, error) {
     globalVarsPath := fmt.Sprintf("%s/stack_share_variables", workDir)
     DebugLog("Attempting to read global variables: %s", globalVarsPath)
-    
+
     // Check if file exists
     if _, err := os.Stat(globalVarsPath); os.IsNotExist(err) {
         DebugLog("Warning: global variables file does not exist: %s", globalVarsPath)
         return make(map[string]interface{}), nil // Return empty map instead of error
     }
-    
+
     result := make(map[string]interface{})
     configs, err := LoadYaml(globalVarsPath)
     if err != nil {
         DebugLog("Failed to read global variables: %v", err)
         return nil, err
     }
-    
+
     DebugLog("Successfully read %d YAML files from %s", len(configs), globalVarsPath)
-    
+
     for _, config := range configs {
         if data, ok := config["variables"]; ok {
             if subMap, ok := data.(map[string]interface{}); ok {

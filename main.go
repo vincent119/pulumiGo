@@ -1,12 +1,13 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "pulumiGo/command"
-    "pulumiGo/command/handlers"
-    "pulumiGo/iac_modules"
-    "github.com/spf13/cobra"
+	"fmt"
+	"os"
+	"pulumiGo/command"
+	"pulumiGo/command/handlers"
+	"pulumiGo/iac"
+
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -26,7 +27,7 @@ func main() {
         PersistentPreRun: func(cmd *cobra.Command, args []string) {
             if debugMode {
                 fmt.Println("Debug mode enabled")
-                iac_modules.SetDebugMode(true)
+                iac.SetDebugMode(true)
             }
         },
         RunE: func(cmd *cobra.Command, args []string) error {
@@ -37,21 +38,21 @@ func main() {
             return command.ExecuteCmd(cmd, args)
         },
     }
-    
+
     // Add global flags
     rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug", "d", false, "Enable debug logging")
-        
+
     // Add all commands to the root command
     command.AddCommands(rootCmd)
-    
+
     // Execute the command
     if err := rootCmd.Execute(); err != nil {
         fmt.Println(err)
         os.Exit(1)
     }
-    
+
     // Set debug mode after command parsing
     if debugMode {
-        iac_modules.SetDebugMode(true)
+        iac.SetDebugMode(true)
     }
 }

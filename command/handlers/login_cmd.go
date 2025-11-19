@@ -1,20 +1,21 @@
 package handlers
 
 import (
-    "github.com/spf13/cobra"
-    "pulumiGo/interfaces"
+	"pulumiGo/types"
+
+	"github.com/spf13/cobra"
 )
 
 // LoginHandler 處理 login 命令
 type LoginHandler struct {
-    interfaces.BaseHandler
+    types.BaseHandler
     localFlag bool
 }
 
 // NewLoginHandler 創建 login 命令處理器
 func NewLoginHandler() *LoginHandler {
     handler := &LoginHandler{}
-    
+
     cmd := &cobra.Command{
         Use:   "login [url]",
         Short: "Log in to the Pulumi Cloud",
@@ -28,10 +29,10 @@ func NewLoginHandler() *LoginHandler {
             return executeCommand(cmd, pulumiArgs)
         },
     }
-    
+
     // 添加 local 標誌
     cmd.Flags().BoolVar(&handler.localFlag, "local", false, "Use Pulumi in local mode")
-    
+
     handler.Command = cmd
     return handler
 }

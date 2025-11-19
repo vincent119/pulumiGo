@@ -1,13 +1,14 @@
 package handlers
 
 import (
-    "github.com/spf13/cobra"
-    "pulumiGo/interfaces"
+	"pulumiGo/types"
+
+	"github.com/spf13/cobra"
 )
 
 // VersionCommand 處理 version 命令
 type VersionCommand struct {
-    interfaces.BaseHandler
+    types.BaseHandler
 }
 
 // NewVersionCommand 創建新的 version 命令處理器
@@ -18,21 +19,21 @@ func NewVersionCommand() *VersionCommand {
         Long:  `Display the current Pulumi CLI version and runtime information.`,
         RunE: func(cmd *cobra.Command, args []string) error {
             cmdArgs := []string{"version"}
-            
+
             // 檢查是否需要詳細信息
             if cmd.Flag("verbose") != nil && cmd.Flag("verbose").Changed {
                 cmdArgs = append(cmdArgs, "--verbose")
             }
-            
+
             return executeCommand(cmd, cmdArgs)
         },
     }
-    
+
     // 添加 version 命令的標誌
     cmd.Flags().BoolP("verbose", "v", false, "Display additional version information")
-    
+
     return &VersionCommand{
-        BaseHandler: interfaces.BaseHandler{Command: cmd},
+        BaseHandler: types.BaseHandler{Command: cmd},
     }
 }
 

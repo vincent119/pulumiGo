@@ -1,13 +1,14 @@
 package command
 
 import (
-    "github.com/spf13/cobra"
-    "pulumiGo/interfaces"
+	"pulumiGo/types"
+
+	"github.com/spf13/cobra"
 )
 
 // SimpleCommandHandler 簡單命令處理器
 type SimpleCommandHandler struct {
-    interfaces.BaseHandler
+    types.BaseHandler
 }
 
 // NewSimpleCommand 創建簡單的 Pulumi 命令
@@ -20,6 +21,6 @@ func NewSimpleCommand(name, short, long string) *SimpleCommandHandler {
             return ExecuteCmd(cmd, append([]string{name}, args...))
         },
     }
-    
-    return &SimpleCommandHandler{interfaces.BaseHandler{Command: cmd}}
+
+    return &SimpleCommandHandler{types.BaseHandler{Command: cmd}}
 }

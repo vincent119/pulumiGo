@@ -1,12 +1,13 @@
 package handlers
 
 import (
-    "github.com/spf13/cobra"
-    "pulumiGo/interfaces"
+	"pulumiGo/types"
+
+	"github.com/spf13/cobra"
 )
 
 type StackHandler struct {
-    interfaces.BaseHandler
+    types.BaseHandler
 }
 
 
@@ -20,7 +21,7 @@ func NewStackHandler() *StackHandler {
         },
     }
 
-    return &StackHandler{BaseHandler: interfaces.BaseHandler{Command: cmd}}
+    return &StackHandler{BaseHandler: types.BaseHandler{Command: cmd}}
 }
 
 
@@ -28,7 +29,7 @@ func (h *StackHandler) RegisterSubcommands(cmd *cobra.Command) {
 
     lsCmd := newSubcommand("stack", "ls", "List stacks", 0)
     cmd.AddCommand(lsCmd)
-    
+
     selectCmd := &cobra.Command{
         Use:   "select [stack]",
         Short: "Select a stack",
