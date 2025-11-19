@@ -27,25 +27,53 @@ func NewPluginCommand() *PluginCommand {
     }
 }
 
-// RegisterSubcommands 註冊 plugin 的子命令
-func (h *PluginCommand) RegisterSubcommands(cmd *cobra.Command) {
-    // 添加 install 子命令
-    installCmd := &cobra.Command{
+// newPluginInstallCommand 創建 plugin install 子命令
+func newPluginInstallCommand() *cobra.Command {
+    cmd := &cobra.Command{
         Use:   "install [kind] [name] [version]",
         Short: "Install one or more plugins",
         Long:  `Install one or more language or resource provider plugins.`,
         RunE: func(cmd *cobra.Command, args []string) error {
             cmdArgs := []string{"plugin", "install"}
             cmdArgs = append(cmdArgs, args...)
+
+            // 添加標誌
+            if cmd.Flag("checksum") != nil && cmd.Flag("checksum").Changed {
+                checksum, _ := cmd.Flags().GetString("checksum")
+                cmdArgs = append(cmdArgs, "--checksum", checksum)
+            }
+            if cmd.Flag("exact") != nil && cmd.Flag("exact").Changed {
+                cmdArgs = append(cmdArgs, "--exact")
+            }
+            if cmd.Flag("file") != nil && cmd.Flag("file").Changed {
+                file, _ := cmd.Flags().GetString("file")
+                cmdArgs = append(cmdArgs, "--file", file)
+            }
+            if cmd.Flag("reinstall") != nil && cmd.Flag("reinstall").Changed {
+                cmdArgs = append(cmdArgs, "--reinstall")
+            }
+            if cmd.Flag("server") != nil && cmd.Flag("server").Changed {
+                server, _ := cmd.Flags().GetString("server")
+                cmdArgs = append(cmdArgs, "--server", server)
+            }
+
             return executeCommand(cmd, cmdArgs)
         },
     }
 
-    // 為 install 命令添加標誌
-    installCmd.Flags().Bool("exact", false, "Force installation of an exact version match")
-    installCmd.Flags().String("file", "", "Install a plugin from a tarball file, instead of downloading it")
-    installCmd.Flags().Bool("reinstall", false, "Reinstall the plugin even if it already exists")
+    cmd.Flags().String("checksum", "", "The expected SHA256 checksum for the plugin archive")
+    cmd.Flags().Bool("exact", false, "Force installation of an exact version match")
+    cmd.Flags().StringP("file", "f", "", "Install a plugin from a binary, folder or tarball file, instead of downloading it")
+    cmd.Flags().Bool("reinstall", false, "Reinstall a plugin even if it already exists")
+    cmd.Flags().String("server", "", "A URL to download plugins from")
 
+    return cmd
+}
+
+// RegisterSubcommands 註冊 plugin 的子命令
+func (h *PluginCommand) RegisterSubcommands(cmd *cobra.Command) {
+    // 添加 install 子命令
+    installCmd := newPluginInstallCommand()
     cmd.AddCommand(installCmd)
 
     // 添加 ls 子命令
