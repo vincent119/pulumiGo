@@ -1,7 +1,13 @@
-## Build
+## Build for Mac
 
 ```zsh
   go build -o pulumiGo
+```
+
+## Build for Windows
+
+```zsh
+GOOS=windows GOARCH=amd64 go build -o pulumiGo.exe
 ```
 
 ##
@@ -22,7 +28,7 @@ xattr -d com.apple.quarantine pulumiGo
 mkdir -p ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/pulumiGo
 pulumiGo completion zsh > ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/pulumiGo/_pulumiGo
 
-# Eidt ~/.zshrc
+# Edit ~/.zshrc
 # plugins=(git ... pulumiGo)
 
 # Reload
