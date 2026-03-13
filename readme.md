@@ -26,6 +26,15 @@ Pulumi Go Wrapper - Manage infrastructure with Pulumi.
 - `about`: Show information about the Pulumi CLI.
 - `version`: Show version information.
 
+## Installation
+
+### Homebrew (macOS / Linux)
+
+```zsh
+brew tap vincent119/tap
+brew install pulumiGo
+```
+
 ## Build Instructions
 
 ### Build for Mac
