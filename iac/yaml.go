@@ -1,6 +1,7 @@
 package iac
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -51,9 +52,9 @@ func LoadYamlFileAll(path string) ([]map[string]interface{}, error) {
         var doc map[string]interface{}
         err := decoder.Decode(&doc)
         if err != nil {
-            // 區分 EOF 和其他錯誤
-            if err == io.EOF {
-                break // 正常結束
+            // Distinguish EOF from real errors.
+            if errors.Is(err, io.EOF) {
+                break
             }
 
             // 記錄解析錯誤但繼續

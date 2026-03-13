@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"pulumiGo/types"
 	"strings"
 
@@ -35,15 +36,55 @@ func newSubcommand(parentCmd string, use string, desc string, argCount int) *cob
     return cmd
 }
 
-// executeCommand 是處理器包內部的命令執行函數
+// executeCommand is the package-internal command dispatcher.
 func executeCommand(cmd *cobra.Command, args []string) error {
+    if executeCommandFunc == nil {
+        return fmt.Errorf("execute function not initialized")
+    }
     return executeCommandFunc(cmd, args)
 }
 
 // executeCommandFunc 是全局執行函數指針，由 main 設置
 var executeCommandFunc types.ExecuteCmdFunc
 
-// InitExecuteFunc 設置命令執行函數
+// InitExecuteFunc sets the command execution function.
 func InitExecuteFunc(fn types.ExecuteCmdFunc) {
     executeCommandFunc = fn
+}
+
+// forwardStringArrayFlag appends --flagName value... for each value when the flag was changed.
+func forwardStringArrayFlag(cmd *cobra.Command, args []string, flagName string) []string {
+    if f := cmd.Flag(flagName); f != nil && f.Changed {
+        vals, _ := cmd.Flags().GetStringArray(flagName)
+        for _, v := range vals {
+            args = append(args, "--"+flagName, v)
+        }
+    }
+    return args
+}
+
+// forwardStringFlag appends --flagName value when the flag was changed.
+func forwardStringFlag(cmd *cobra.Command, args []string, flagName string) []string {
+    if f := cmd.Flag(flagName); f != nil && f.Changed {
+        val, _ := cmd.Flags().GetString(flagName)
+        args = append(args, "--"+flagName, val)
+    }
+    return args
+}
+
+// forwardBoolFlag appends --flagName when the flag was changed.
+func forwardBoolFlag(cmd *cobra.Command, args []string, flagName string) []string {
+    if f := cmd.Flag(flagName); f != nil && f.Changed {
+        args = append(args, "--"+flagName)
+    }
+    return args
+}
+
+// forwardInt32Flag appends --flagName value when the flag was changed.
+func forwardInt32Flag(cmd *cobra.Command, args []string, flagName string) []string {
+    if f := cmd.Flag(flagName); f != nil && f.Changed {
+        val, _ := cmd.Flags().GetInt32(flagName)
+        args = append(args, "--"+flagName, fmt.Sprintf("%d", val))
+    }
+    return args
 }

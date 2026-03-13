@@ -4,23 +4,29 @@
 package iac
 
 import (
-	"log"
+	"fmt"
+
+	"github.com/vincent119/zlogger"
 )
 
-// DebugMode 指示是否啟用調試日誌
-var DebugMode bool = false
-
-// SetDebugMode enables or disables debug logging
-func SetDebugMode(enabled bool) {
-    DebugMode = enabled
-    if enabled {
-        log.Printf("Debug mode enabled")
-    }
+func init() {
+	// Initialize at warn level to suppress the internal "logger initialized" info message.
+	// Level will be raised to debug via SetDebugMode when --debug flag is set.
+	zlogger.Init(&zlogger.Config{Level: "warn"})
 }
 
-// DebugLog logs messages only when debug mode is enabled
+// SetDebugMode enables or disables debug-level logging.
+func SetDebugMode(enabled bool) {
+	if enabled {
+		zlogger.SetLevel("debug")
+		zlogger.Debug("debug mode enabled")
+	} else {
+		zlogger.SetLevel("info")
+	}
+}
+
+// DebugLog emits a formatted message at debug level.
+// It is a no-op when the current log level is above debug.
 func DebugLog(format string, v ...interface{}) {
-    if DebugMode {
-        log.Printf("[DEBUG] "+format, v...)
-    }
+	zlogger.Debug(fmt.Sprintf(format, v...))
 }

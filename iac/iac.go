@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -28,7 +29,7 @@ func StackCheck() (string, error) {
     cmd := exec.Command("pulumi", "stack", "ls", "--json")
     output, err := cmd.Output()
     if err != nil {
-        return "", errors.New("stack not found")
+        return "", fmt.Errorf("stack not found: %w", err)
     }
 
     var stacks []map[string]interface{}
@@ -52,7 +53,7 @@ func StackCheck() (string, error) {
 
 // Dump extracts specific properties from stack configuration
 func Dump(prop string, stackName string) (map[string]interface{}, error) {
-    stackPath := fmt.Sprintf("%s/stacks/%s", workDir, stackName)
+    stackPath := filepath.Join(workDir, "stacks", stackName)
     DebugLog("Attempting to read directory: %s", stackPath)
 
     // Check if directory exists
@@ -99,7 +100,7 @@ func Dump(prop string, stackName string) (map[string]interface{}, error) {
 
 // GlobalVariables reads and returns global variables
 func GlobalVariables() (map[string]interface{}, error) {
-    globalVarsPath := fmt.Sprintf("%s/stack_share_variables", workDir)
+    globalVarsPath := filepath.Join(workDir, "stack_share_variables")
     DebugLog("Attempting to read global variables: %s", globalVarsPath)
 
     // Check if file exists
@@ -158,7 +159,7 @@ func Join(stackName string) error {
         projectData[k] = v
     }
 
-    pulumiYamlPath := fmt.Sprintf("%s/Pulumi.yaml", workDir)
+    pulumiYamlPath := filepath.Join(workDir, "Pulumi.yaml")
     DebugLog("Writing merged result to: %s", pulumiYamlPath)
     return WriteYamlFile(pulumiYamlPath, projectData)
 }
@@ -171,14 +172,14 @@ func Recovery() error {
         DebugLog("Failed to read Pulumi.yaml: %v", err)
         return err
     }
-    pulumiYamlPath := fmt.Sprintf("%s/Pulumi.yaml", workDir)
+    pulumiYamlPath := filepath.Join(workDir, "Pulumi.yaml")
     DebugLog("Restoring Pulumi.yaml to: %s", pulumiYamlPath)
     return WriteYamlFile(pulumiYamlPath, data)
 }
 
 // SectionsRemove removes specific sections from Pulumi.yaml
 func SectionsRemove() (map[string]interface{}, error) {
-    path := fmt.Sprintf("%s/Pulumi.yaml", workDir)
+    path := filepath.Join(workDir, "Pulumi.yaml")
     DebugLog("Removing specific sections from %s", path)
     data, err := ReadYamlFile(path)  // 使用大寫開頭的新函數
     if err != nil {

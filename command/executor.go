@@ -10,17 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
-
 func init() {
-    // 初始化默認執行器
-    DefaultExecutor = &pulumiBinaryExecutor{}
-}
-
-// CommandExecutor 介面定義
-type CommandExecutor interface {
-    Execute(cmd *cobra.Command, args []string) error
-    Run(commands []string, stackName string)
+	DefaultExecutor = &pulumiBinaryExecutor{}
 }
 
 // pulumiBinaryExecutor 實現了 CommandExecutor 介面
@@ -54,7 +45,7 @@ func (e *pulumiBinaryExecutor) Execute(cmd *cobra.Command, args []string) error 
     if !isStacklessCommand {
         stackName, err = iac.StackCheck()
         if err != nil {
-            return fmt.Errorf("stack check error: %v", err)
+            return fmt.Errorf("stack check error: %w", err)
         }
     }
 
@@ -97,35 +88,33 @@ func (e *pulumiBinaryExecutor) Execute(cmd *cobra.Command, args []string) error 
     }
 
     // 其他命令正常執行
-    e.Run(pulumiArgs, stackName)
-
-    return nil
+    return e.Run(pulumiArgs, stackName)
 }
 
-// Run executes a Pulumi command with the given arguments and stack name
-func (e *pulumiBinaryExecutor) Run(commands []string, stackName string) {
-    err := iac.Join(stackName)
-    if err != nil {
-        log.Println("Join error:", err)
-        return
+// Run executes a Pulumi command with the given arguments and stack name.
+// Recovery is always attempted even if the command fails.
+func (e *pulumiBinaryExecutor) Run(commands []string, stackName string) error {
+    if err := iac.Join(stackName); err != nil {
+        return fmt.Errorf("join error: %w", err)
     }
 
     iac.DebugLog("Executing command: %v", commands)
 
-    // Execute command with standard input support for interactive mode
+    // Execute command with standard input support for interactive mode.
     cmd := exec.Command(commands[0], commands[1:]...)
     cmd.Stdout = os.Stdout
     cmd.Stderr = os.Stderr
     cmd.Stdin = os.Stdin
 
-    err = cmd.Run()
-    if err != nil {
-        log.Println("Command error:", err)
+    cmdErr := cmd.Run()
+    if cmdErr != nil {
+        log.Println("Command error:", cmdErr)
     }
 
-    // Always execute recovery
-    err = iac.Recovery()
-    if err != nil {
+    // Always execute recovery.
+    if err := iac.Recovery(); err != nil {
         log.Println("Recovery error:", err)
     }
+
+    return cmdErr
 }

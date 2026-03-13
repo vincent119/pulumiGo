@@ -10,8 +10,7 @@ import (
 func Setup() *CommandRegistry {
     registry := NewCommandRegistry()
 
-    registry.Register(NewSimpleCommand("up", "Create or update resources in a stack",
-        "Update the resources in a stack to match the current configuration."))
+    registry.Register(handlers.NewUpCommand())
     registry.Register(handlers.NewPreviewCommand())
     registry.Register(handlers.NewLogoutHandler())
     registry.Register(NewSimpleCommand("whoami", "Display the current logged-in user",

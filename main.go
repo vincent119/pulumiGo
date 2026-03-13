@@ -8,6 +8,7 @@ import (
 	"pulumiGo/iac"
 
 	"github.com/spf13/cobra"
+	"github.com/vincent119/zlogger"
 )
 
 var (
@@ -17,6 +18,7 @@ var (
 
 
 func main() {
+    defer zlogger.Sync()
     handlers.InitExecuteFunc(command.ExecuteCmd)
     rootCmd := &cobra.Command{
         Use:   "pulumiGo [command]",
@@ -26,7 +28,6 @@ func main() {
         "while providing extra features for stack management.", Version),
         PersistentPreRun: func(cmd *cobra.Command, args []string) {
             if debugMode {
-                fmt.Println("Debug mode enabled")
                 iac.SetDebugMode(true)
             }
         },
@@ -47,12 +48,7 @@ func main() {
 
     // Execute the command
     if err := rootCmd.Execute(); err != nil {
-        fmt.Println(err)
+        fmt.Fprintln(os.Stderr, err)
         os.Exit(1)
-    }
-
-    // Set debug mode after command parsing
-    if debugMode {
-        iac.SetDebugMode(true)
     }
 }
