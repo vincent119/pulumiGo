@@ -52,7 +52,7 @@ brews:
       system "#{bin}/pulumiGo", "--version"
 
 changelog:
-  sort: asc
+  sort: desc
   filters:
     exclude:
       - "^docs:"
