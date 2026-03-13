@@ -38,6 +38,19 @@ archives:
       - goos: windows
         formats: [zip]
 
+brews:
+  - name: pulumiGo
+    repository:
+      owner: vincent119
+      name: homebrew-tap
+      token: "{{ .Env.GITHUB_TOKEN }}"
+    homepage: "https://github.com/vincent119/pulumiGo"
+    description: "pulumiGo CLI tool"
+    install: |
+      bin.install "pulumiGo"
+    test: |
+      system "#{bin}/pulumiGo", "--version"
+
 changelog:
   sort: asc
   filters:
