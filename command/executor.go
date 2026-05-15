@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"pulumiGo/iac"
@@ -53,27 +52,6 @@ func (e *pulumiBinaryExecutor) Execute(cmd *cobra.Command, args []string) error 
     pulumiArgs := []string{"pulumi"}
     pulumiArgs = append(pulumiArgs, args...)
 
-    // 檢查並添加標誌
-    // 特別處理 config 命令的標誌
-    if len(args) > 0 && args[0] == "config" {
-        // 處理 --show-secrets 標誌
-        if cmd.Flag("show-secrets") != nil && cmd.Flag("show-secrets").Changed {
-            pulumiArgs = append(pulumiArgs, "--show-secrets")
-        }
-
-        // 處理 --json 標誌
-        if cmd.Flag("json") != nil && cmd.Flag("json").Changed {
-            pulumiArgs = append(pulumiArgs, "--json")
-        }
-    }
-
-    // 處理 login 命令的 --local 標誌
-    if len(args) > 0 && args[0] == "login" {
-        if cmd.Flag("local") != nil && cmd.Flag("local").Changed {
-            pulumiArgs = append(pulumiArgs, "--local")
-        }
-    }
-
     // 僅在 debug 模式下輸出日誌
     iac.DebugLog("Executing command: %v", pulumiArgs)
 
@@ -108,12 +86,12 @@ func (e *pulumiBinaryExecutor) Run(commands []string, stackName string) error {
 
     cmdErr := cmd.Run()
     if cmdErr != nil {
-        log.Println("Command error:", cmdErr)
+        iac.DebugLog("Command error: %v", cmdErr)
     }
 
     // Always execute recovery.
     if err := iac.Recovery(); err != nil {
-        log.Println("Recovery error:", err)
+        iac.DebugLog("Recovery error: %v", err)
     }
 
     return cmdErr

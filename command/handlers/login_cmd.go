@@ -18,29 +18,14 @@ func NewLoginHandler() *LoginHandler {
         Short: "Log in to the Pulumi Cloud",
         Long:  `Log in to the Pulumi Cloud backend at the specified URL or the default.`,
         RunE: func(cmd *cobra.Command, args []string) error {
-            pulumiArgs := []string{"login"}
-            pulumiArgs = append(pulumiArgs, args...)
-
-            // 添加標誌
-            if cmd.Flag("cloud-url") != nil && cmd.Flag("cloud-url").Changed {
-                cloudURL, _ := cmd.Flags().GetString("cloud-url")
-                pulumiArgs = append(pulumiArgs, "--cloud-url", cloudURL)
+            a := append([]string{"login"}, args...)
+            for _, f := range []string{"cloud-url", "default-org"} {
+                a = forwardStringFlag(cmd, a, f)
             }
-            if cmd.Flag("default-org") != nil && cmd.Flag("default-org").Changed {
-                defaultOrg, _ := cmd.Flags().GetString("default-org")
-                pulumiArgs = append(pulumiArgs, "--default-org", defaultOrg)
+            for _, f := range []string{"insecure", "interactive", "local"} {
+                a = forwardBoolFlag(cmd, a, f)
             }
-            if cmd.Flag("insecure") != nil && cmd.Flag("insecure").Changed {
-                pulumiArgs = append(pulumiArgs, "--insecure")
-            }
-            if cmd.Flag("interactive") != nil && cmd.Flag("interactive").Changed {
-                pulumiArgs = append(pulumiArgs, "--interactive")
-            }
-            if cmd.Flag("local") != nil && cmd.Flag("local").Changed {
-                pulumiArgs = append(pulumiArgs, "--local")
-            }
-
-            return executeCommand(cmd, pulumiArgs)
+            return executeCommand(cmd, a)
         },
     }
 

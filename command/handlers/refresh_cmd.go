@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"pulumiGo/types"
 
 	"github.com/spf13/cobra"
@@ -17,185 +16,38 @@ func NewRefreshHandler() *RefreshHandler {
 		Short: "Refresh the resources in a stack",
 		Long:  `Refresh the resources in a stack to match the current state of the infrastructure.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmdArgs := []string{"refresh"}
-			cmdArgs = append(cmdArgs, args...)
+			a := append([]string{"refresh"}, args...)
 
-			// String array flags
-			if cmd.Flag("exclude") != nil && cmd.Flag("exclude").Changed {
-				exclude, _ := cmd.Flags().GetStringArray("exclude")
-				for _, e := range exclude {
-					cmdArgs = append(cmdArgs, "--exclude", e)
-				}
+			for _, f := range []string{
+				"exclude", "import-pending-creates", "remote-env",
+				"remote-env-secret", "remote-pre-run-command", "target",
+			} {
+				a = forwardStringArrayFlag(cmd, a, f)
 			}
-			if cmd.Flag("import-pending-creates") != nil && cmd.Flag("import-pending-creates").Changed {
-				importPendingCreates, _ := cmd.Flags().GetStringArray("import-pending-creates")
-				for _, ipc := range importPendingCreates {
-					cmdArgs = append(cmdArgs, "--import-pending-creates", ipc)
-				}
+			for _, f := range []string{
+				"config-file", "message", "remote-agent-pool-id",
+				"remote-executor-image", "remote-executor-image-password",
+				"remote-executor-image-username", "remote-git-auth-access-token",
+				"remote-git-auth-password", "remote-git-auth-ssh-private-key",
+				"remote-git-auth-ssh-private-key-path", "remote-git-auth-username",
+				"remote-git-branch", "remote-git-commit", "remote-git-repo-dir",
+				"stack", "suppress-permalink",
+			} {
+				a = forwardStringFlag(cmd, a, f)
 			}
-			if cmd.Flag("remote-env") != nil && cmd.Flag("remote-env").Changed {
-				remoteEnv, _ := cmd.Flags().GetStringArray("remote-env")
-				for _, re := range remoteEnv {
-					cmdArgs = append(cmdArgs, "--remote-env", re)
-				}
+			for _, f := range []string{
+				"clear-pending-creates", "debug", "diff", "exclude-dependents",
+				"expect-no-changes", "json", "neo", "preview-only", "remote",
+				"remote-inherit-settings", "remote-skip-install-dependencies",
+				"run-program", "show-replacement-steps", "show-sames",
+				"skip-pending-creates", "skip-preview", "suppress-outputs",
+				"suppress-progress", "suppress-stream-logs", "target-dependents", "yes",
+			} {
+				a = forwardBoolFlag(cmd, a, f)
 			}
-			if cmd.Flag("remote-env-secret") != nil && cmd.Flag("remote-env-secret").Changed {
-				remoteEnvSecret, _ := cmd.Flags().GetStringArray("remote-env-secret")
-				for _, res := range remoteEnvSecret {
-					cmdArgs = append(cmdArgs, "--remote-env-secret", res)
-				}
-			}
-			if cmd.Flag("remote-pre-run-command") != nil && cmd.Flag("remote-pre-run-command").Changed {
-				remotePreRunCommand, _ := cmd.Flags().GetStringArray("remote-pre-run-command")
-				for _, rprc := range remotePreRunCommand {
-					cmdArgs = append(cmdArgs, "--remote-pre-run-command", rprc)
-				}
-			}
-			if cmd.Flag("target") != nil && cmd.Flag("target").Changed {
-				target, _ := cmd.Flags().GetStringArray("target")
-				for _, t := range target {
-					cmdArgs = append(cmdArgs, "--target", t)
-				}
-			}
+			a = forwardInt32Flag(cmd, a, "parallel")
 
-			// String flags
-			if cmd.Flag("config-file") != nil && cmd.Flag("config-file").Changed {
-				configFile, _ := cmd.Flags().GetString("config-file")
-				cmdArgs = append(cmdArgs, "--config-file", configFile)
-			}
-			if cmd.Flag("message") != nil && cmd.Flag("message").Changed {
-				message, _ := cmd.Flags().GetString("message")
-				cmdArgs = append(cmdArgs, "--message", message)
-			}
-			if cmd.Flag("remote-agent-pool-id") != nil && cmd.Flag("remote-agent-pool-id").Changed {
-				remoteAgentPoolID, _ := cmd.Flags().GetString("remote-agent-pool-id")
-				cmdArgs = append(cmdArgs, "--remote-agent-pool-id", remoteAgentPoolID)
-			}
-			if cmd.Flag("remote-executor-image") != nil && cmd.Flag("remote-executor-image").Changed {
-				remoteExecutorImage, _ := cmd.Flags().GetString("remote-executor-image")
-				cmdArgs = append(cmdArgs, "--remote-executor-image", remoteExecutorImage)
-			}
-			if cmd.Flag("remote-executor-image-password") != nil && cmd.Flag("remote-executor-image-password").Changed {
-				remoteExecutorImagePassword, _ := cmd.Flags().GetString("remote-executor-image-password")
-				cmdArgs = append(cmdArgs, "--remote-executor-image-password", remoteExecutorImagePassword)
-			}
-			if cmd.Flag("remote-executor-image-username") != nil && cmd.Flag("remote-executor-image-username").Changed {
-				remoteExecutorImageUsername, _ := cmd.Flags().GetString("remote-executor-image-username")
-				cmdArgs = append(cmdArgs, "--remote-executor-image-username", remoteExecutorImageUsername)
-			}
-			if cmd.Flag("remote-git-auth-access-token") != nil && cmd.Flag("remote-git-auth-access-token").Changed {
-				remoteGitAuthAccessToken, _ := cmd.Flags().GetString("remote-git-auth-access-token")
-				cmdArgs = append(cmdArgs, "--remote-git-auth-access-token", remoteGitAuthAccessToken)
-			}
-			if cmd.Flag("remote-git-auth-password") != nil && cmd.Flag("remote-git-auth-password").Changed {
-				remoteGitAuthPassword, _ := cmd.Flags().GetString("remote-git-auth-password")
-				cmdArgs = append(cmdArgs, "--remote-git-auth-password", remoteGitAuthPassword)
-			}
-			if cmd.Flag("remote-git-auth-ssh-private-key") != nil && cmd.Flag("remote-git-auth-ssh-private-key").Changed {
-				remoteGitAuthSSHPrivateKey, _ := cmd.Flags().GetString("remote-git-auth-ssh-private-key")
-				cmdArgs = append(cmdArgs, "--remote-git-auth-ssh-private-key", remoteGitAuthSSHPrivateKey)
-			}
-			if cmd.Flag("remote-git-auth-ssh-private-key-path") != nil && cmd.Flag("remote-git-auth-ssh-private-key-path").Changed {
-				remoteGitAuthSSHPrivateKeyPath, _ := cmd.Flags().GetString("remote-git-auth-ssh-private-key-path")
-				cmdArgs = append(cmdArgs, "--remote-git-auth-ssh-private-key-path", remoteGitAuthSSHPrivateKeyPath)
-			}
-			if cmd.Flag("remote-git-auth-username") != nil && cmd.Flag("remote-git-auth-username").Changed {
-				remoteGitAuthUsername, _ := cmd.Flags().GetString("remote-git-auth-username")
-				cmdArgs = append(cmdArgs, "--remote-git-auth-username", remoteGitAuthUsername)
-			}
-			if cmd.Flag("remote-git-branch") != nil && cmd.Flag("remote-git-branch").Changed {
-				remoteGitBranch, _ := cmd.Flags().GetString("remote-git-branch")
-				cmdArgs = append(cmdArgs, "--remote-git-branch", remoteGitBranch)
-			}
-			if cmd.Flag("remote-git-commit") != nil && cmd.Flag("remote-git-commit").Changed {
-				remoteGitCommit, _ := cmd.Flags().GetString("remote-git-commit")
-				cmdArgs = append(cmdArgs, "--remote-git-commit", remoteGitCommit)
-			}
-			if cmd.Flag("remote-git-repo-dir") != nil && cmd.Flag("remote-git-repo-dir").Changed {
-				remoteGitRepoDir, _ := cmd.Flags().GetString("remote-git-repo-dir")
-				cmdArgs = append(cmdArgs, "--remote-git-repo-dir", remoteGitRepoDir)
-			}
-			if cmd.Flag("stack") != nil && cmd.Flag("stack").Changed {
-				stack, _ := cmd.Flags().GetString("stack")
-				cmdArgs = append(cmdArgs, "--stack", stack)
-			}
-			if cmd.Flag("suppress-permalink") != nil && cmd.Flag("suppress-permalink").Changed {
-				suppressPermalink, _ := cmd.Flags().GetString("suppress-permalink")
-				cmdArgs = append(cmdArgs, "--suppress-permalink", suppressPermalink)
-			}
-
-			// Boolean flags
-			if cmd.Flag("clear-pending-creates") != nil && cmd.Flag("clear-pending-creates").Changed {
-				cmdArgs = append(cmdArgs, "--clear-pending-creates")
-			}
-			if cmd.Flag("debug") != nil && cmd.Flag("debug").Changed {
-				cmdArgs = append(cmdArgs, "--debug")
-			}
-			if cmd.Flag("diff") != nil && cmd.Flag("diff").Changed {
-				cmdArgs = append(cmdArgs, "--diff")
-			}
-			if cmd.Flag("exclude-dependents") != nil && cmd.Flag("exclude-dependents").Changed {
-				cmdArgs = append(cmdArgs, "--exclude-dependents")
-			}
-			if cmd.Flag("expect-no-changes") != nil && cmd.Flag("expect-no-changes").Changed {
-				cmdArgs = append(cmdArgs, "--expect-no-changes")
-			}
-			if cmd.Flag("json") != nil && cmd.Flag("json").Changed {
-				cmdArgs = append(cmdArgs, "--json")
-			}
-			if cmd.Flag("neo") != nil && cmd.Flag("neo").Changed {
-				cmdArgs = append(cmdArgs, "--neo")
-			}
-			if cmd.Flag("preview-only") != nil && cmd.Flag("preview-only").Changed {
-				cmdArgs = append(cmdArgs, "--preview-only")
-			}
-			if cmd.Flag("remote") != nil && cmd.Flag("remote").Changed {
-				cmdArgs = append(cmdArgs, "--remote")
-			}
-			if cmd.Flag("remote-inherit-settings") != nil && cmd.Flag("remote-inherit-settings").Changed {
-				cmdArgs = append(cmdArgs, "--remote-inherit-settings")
-			}
-			if cmd.Flag("remote-skip-install-dependencies") != nil && cmd.Flag("remote-skip-install-dependencies").Changed {
-				cmdArgs = append(cmdArgs, "--remote-skip-install-dependencies")
-			}
-			if cmd.Flag("run-program") != nil && cmd.Flag("run-program").Changed {
-				cmdArgs = append(cmdArgs, "--run-program")
-			}
-			if cmd.Flag("show-replacement-steps") != nil && cmd.Flag("show-replacement-steps").Changed {
-				cmdArgs = append(cmdArgs, "--show-replacement-steps")
-			}
-			if cmd.Flag("show-sames") != nil && cmd.Flag("show-sames").Changed {
-				cmdArgs = append(cmdArgs, "--show-sames")
-			}
-			if cmd.Flag("skip-pending-creates") != nil && cmd.Flag("skip-pending-creates").Changed {
-				cmdArgs = append(cmdArgs, "--skip-pending-creates")
-			}
-			if cmd.Flag("skip-preview") != nil && cmd.Flag("skip-preview").Changed {
-				cmdArgs = append(cmdArgs, "--skip-preview")
-			}
-			if cmd.Flag("suppress-outputs") != nil && cmd.Flag("suppress-outputs").Changed {
-				cmdArgs = append(cmdArgs, "--suppress-outputs")
-			}
-			if cmd.Flag("suppress-progress") != nil && cmd.Flag("suppress-progress").Changed {
-				cmdArgs = append(cmdArgs, "--suppress-progress")
-			}
-			if cmd.Flag("suppress-stream-logs") != nil && cmd.Flag("suppress-stream-logs").Changed {
-				cmdArgs = append(cmdArgs, "--suppress-stream-logs")
-			}
-			if cmd.Flag("target-dependents") != nil && cmd.Flag("target-dependents").Changed {
-				cmdArgs = append(cmdArgs, "--target-dependents")
-			}
-			if cmd.Flag("yes") != nil && cmd.Flag("yes").Changed {
-				cmdArgs = append(cmdArgs, "--yes")
-			}
-
-			// Int32 flag
-			if cmd.Flag("parallel") != nil && cmd.Flag("parallel").Changed {
-				parallel, _ := cmd.Flags().GetInt32("parallel")
-				cmdArgs = append(cmdArgs, "--parallel", fmt.Sprintf("%d", parallel))
-			}
-
-			return executeCommand(cmd, cmdArgs)
+			return executeCommand(cmd, a)
 		},
 	}
 

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"pulumiGo/types"
 
 	"github.com/spf13/cobra"
@@ -17,104 +16,26 @@ func NewImportHandler() *ImportHandler {
 		Short: "Import resources into an existing stack",
 		Long:  `Import resources into an existing stack.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmdArgs := []string{"import"}
-			cmdArgs = append(cmdArgs, args...)
+			a := append([]string{"import"}, args...)
 
-			// String array flags
-			if cmd.Flag("config") != nil && cmd.Flag("config").Changed {
-				config, _ := cmd.Flags().GetStringArray("config")
-				for _, c := range config {
-					cmdArgs = append(cmdArgs, "--config", c)
-				}
+			for _, f := range []string{"config", "properties"} {
+				a = forwardStringArrayFlag(cmd, a, f)
 			}
-			if cmd.Flag("properties") != nil && cmd.Flag("properties").Changed {
-				properties, _ := cmd.Flags().GetStringArray("properties")
-				for _, p := range properties {
-					cmdArgs = append(cmdArgs, "--properties", p)
-				}
+			for _, f := range []string{
+				"config-file", "file", "from", "generate-resources",
+				"message", "out", "parent", "provider", "stack", "suppress-permalink",
+			} {
+				a = forwardStringFlag(cmd, a, f)
 			}
+			for _, f := range []string{
+				"debug", "diff", "generate-code", "json", "preview-only",
+				"protect", "skip-preview", "suppress-outputs", "suppress-progress", "yes",
+			} {
+				a = forwardBoolFlag(cmd, a, f)
+			}
+			a = forwardInt32Flag(cmd, a, "parallel")
 
-			// String flags
-			if cmd.Flag("config-file") != nil && cmd.Flag("config-file").Changed {
-				configFile, _ := cmd.Flags().GetString("config-file")
-				cmdArgs = append(cmdArgs, "--config-file", configFile)
-			}
-			if cmd.Flag("file") != nil && cmd.Flag("file").Changed {
-				file, _ := cmd.Flags().GetString("file")
-				cmdArgs = append(cmdArgs, "--file", file)
-			}
-			if cmd.Flag("from") != nil && cmd.Flag("from").Changed {
-				from, _ := cmd.Flags().GetString("from")
-				cmdArgs = append(cmdArgs, "--from", from)
-			}
-			if cmd.Flag("generate-resources") != nil && cmd.Flag("generate-resources").Changed {
-				generateResources, _ := cmd.Flags().GetString("generate-resources")
-				cmdArgs = append(cmdArgs, "--generate-resources", generateResources)
-			}
-			if cmd.Flag("message") != nil && cmd.Flag("message").Changed {
-				message, _ := cmd.Flags().GetString("message")
-				cmdArgs = append(cmdArgs, "--message", message)
-			}
-			if cmd.Flag("out") != nil && cmd.Flag("out").Changed {
-				out, _ := cmd.Flags().GetString("out")
-				cmdArgs = append(cmdArgs, "--out", out)
-			}
-			if cmd.Flag("parent") != nil && cmd.Flag("parent").Changed {
-				parent, _ := cmd.Flags().GetString("parent")
-				cmdArgs = append(cmdArgs, "--parent", parent)
-			}
-			if cmd.Flag("provider") != nil && cmd.Flag("provider").Changed {
-				provider, _ := cmd.Flags().GetString("provider")
-				cmdArgs = append(cmdArgs, "--provider", provider)
-			}
-			if cmd.Flag("stack") != nil && cmd.Flag("stack").Changed {
-				stack, _ := cmd.Flags().GetString("stack")
-				cmdArgs = append(cmdArgs, "--stack", stack)
-			}
-			if cmd.Flag("suppress-permalink") != nil && cmd.Flag("suppress-permalink").Changed {
-				suppressPermalink, _ := cmd.Flags().GetString("suppress-permalink")
-				cmdArgs = append(cmdArgs, "--suppress-permalink", suppressPermalink)
-			}
-
-			// Boolean flags
-			if cmd.Flag("debug") != nil && cmd.Flag("debug").Changed {
-				cmdArgs = append(cmdArgs, "--debug")
-			}
-			if cmd.Flag("diff") != nil && cmd.Flag("diff").Changed {
-				cmdArgs = append(cmdArgs, "--diff")
-			}
-			if cmd.Flag("generate-code") != nil && cmd.Flag("generate-code").Changed {
-				cmdArgs = append(cmdArgs, "--generate-code")
-			}
-			if cmd.Flag("json") != nil && cmd.Flag("json").Changed {
-				cmdArgs = append(cmdArgs, "--json")
-			}
-			if cmd.Flag("preview-only") != nil && cmd.Flag("preview-only").Changed {
-				cmdArgs = append(cmdArgs, "--preview-only")
-			}
-			if cmd.Flag("protect") != nil && cmd.Flag("protect").Changed {
-				cmdArgs = append(cmdArgs, "--protect")
-			}
-			if cmd.Flag("skip-preview") != nil && cmd.Flag("skip-preview").Changed {
-				cmdArgs = append(cmdArgs, "--skip-preview")
-			}
-			if cmd.Flag("suppress-outputs") != nil && cmd.Flag("suppress-outputs").Changed {
-				cmdArgs = append(cmdArgs, "--suppress-outputs")
-			}
-			if cmd.Flag("suppress-progress") != nil && cmd.Flag("suppress-progress").Changed {
-				cmdArgs = append(cmdArgs, "--suppress-progress")
-			}
-			if cmd.Flag("yes") != nil && cmd.Flag("yes").Changed {
-				cmdArgs = append(cmdArgs, "--yes")
-			}
-
-			// Int32 flag
-			if cmd.Flag("parallel") != nil && cmd.Flag("parallel").Changed {
-				parallel, _ := cmd.Flags().GetInt32("parallel")
-				cmdArgs = append(cmdArgs, "--parallel", fmt.Sprintf("%d", parallel))
-			}
-
-			return executeCommand(cmd, cmdArgs)
+			return executeCommand(cmd, a)
 		},
 	}
 

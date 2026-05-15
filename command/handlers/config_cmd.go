@@ -18,8 +18,10 @@ func NewConfigHandler() *ConfigHandler {
         Short: "Manage configuration",
         Long:  `Manage configuration settings for the current stack.`,
         RunE: func(cmd *cobra.Command, args []string) error {
-            // 直接調用具體執行邏輯，而不是通過 command 包
-            return executeCommand(cmd, append([]string{"config"}, args...))
+            a := append([]string{"config"}, args...)
+            a = forwardBoolFlag(cmd, a, "show-secrets")
+            a = forwardBoolFlag(cmd, a, "json")
+            return executeCommand(cmd, a)
         },
     }
 

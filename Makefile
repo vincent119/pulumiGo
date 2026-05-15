@@ -11,7 +11,11 @@ run:
 	go run -ldflags "$(LDFLAGS)" . $(ARGS)
 
 test:
-	go test -race ./...
+	go test -race -count=1 ./...
+
+cover:
+	go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out -o coverage.html
+	go tool cover -func=coverage.out | tail -1
 
 vet:
 	go vet ./...

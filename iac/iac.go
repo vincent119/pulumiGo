@@ -8,18 +8,20 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
-// Current working directory
-var workDir string
+var (
+	workDir     string
+	workDirOnce sync.Once
+	workDirErr  error
+)
 
-func init() {
-    cwd, err := os.Getwd()
-    if err != nil {
-        panic("failed to get current directory")
-    }
-    workDir = cwd
-    //fmt.Println("Work directory:", workDir)
+func getWorkDir() (string, error) {
+	workDirOnce.Do(func() {
+		workDir, workDirErr = os.Getwd()
+	})
+	return workDir, workDirErr
 }
 
 
@@ -53,7 +55,11 @@ func StackCheck() (string, error) {
 
 // Dump extracts specific properties from stack configuration
 func Dump(prop string, stackName string) (map[string]interface{}, error) {
-    stackPath := filepath.Join(workDir, "stacks", stackName)
+    wd, err := getWorkDir()
+    if err != nil {
+        return nil, fmt.Errorf("get work dir: %w", err)
+    }
+    stackPath := filepath.Join(wd, "stacks", stackName)
     DebugLog("Attempting to read directory: %s", stackPath)
 
     // Check if directory exists
@@ -100,7 +106,11 @@ func Dump(prop string, stackName string) (map[string]interface{}, error) {
 
 // GlobalVariables reads and returns global variables
 func GlobalVariables() (map[string]interface{}, error) {
-    globalVarsPath := filepath.Join(workDir, "stack_share_variables")
+    wd, err := getWorkDir()
+    if err != nil {
+        return nil, fmt.Errorf("get work dir: %w", err)
+    }
+    globalVarsPath := filepath.Join(wd, "stack_share_variables")
     DebugLog("Attempting to read global variables: %s", globalVarsPath)
 
     // Check if file exists
@@ -159,7 +169,11 @@ func Join(stackName string) error {
         projectData[k] = v
     }
 
-    pulumiYamlPath := filepath.Join(workDir, "Pulumi.yaml")
+    wd, err := getWorkDir()
+    if err != nil {
+        return fmt.Errorf("get work dir: %w", err)
+    }
+    pulumiYamlPath := filepath.Join(wd, "Pulumi.yaml")
     DebugLog("Writing merged result to: %s", pulumiYamlPath)
     return WriteYamlFile(pulumiYamlPath, projectData)
 }
@@ -172,14 +186,22 @@ func Recovery() error {
         DebugLog("Failed to read Pulumi.yaml: %v", err)
         return err
     }
-    pulumiYamlPath := filepath.Join(workDir, "Pulumi.yaml")
+    wd, err := getWorkDir()
+    if err != nil {
+        return fmt.Errorf("get work dir: %w", err)
+    }
+    pulumiYamlPath := filepath.Join(wd, "Pulumi.yaml")
     DebugLog("Restoring Pulumi.yaml to: %s", pulumiYamlPath)
     return WriteYamlFile(pulumiYamlPath, data)
 }
 
 // SectionsRemove removes specific sections from Pulumi.yaml
 func SectionsRemove() (map[string]interface{}, error) {
-    path := filepath.Join(workDir, "Pulumi.yaml")
+    wd, err := getWorkDir()
+    if err != nil {
+        return nil, fmt.Errorf("get work dir: %w", err)
+    }
+    path := filepath.Join(wd, "Pulumi.yaml")
     DebugLog("Removing specific sections from %s", path)
     data, err := ReadYamlFile(path)  // 使用大寫開頭的新函數
     if err != nil {

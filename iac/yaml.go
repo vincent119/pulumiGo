@@ -159,12 +159,8 @@ func LoadYaml(path string) ([]map[string]interface{}, error) {
             continue
         }
 
-        // 檢查是否成功加載資源
         for i, doc := range data {
             DebugLog("Document %d contains keys: %v", i, getMapKeys(doc))
-
-            // 呼叫獨立函數處理 WAF 規則
-            processWAFRegexPatterns(doc, filePath)
         }
 
         result = append(result, data...)
@@ -336,20 +332,6 @@ func LocateYAMLError(content string, err error) string {
     }
 
     return fmt.Sprintf("YAML Error: %v", err)
-}
-
-func max(a, b int) int {
-    if a > b {
-        return a
-    }
-    return b
-}
-
-func min(a, b int) int {
-    if a < b {
-        return a
-    }
-    return b
 }
 
 
