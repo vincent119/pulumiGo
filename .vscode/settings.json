@@ -3,6 +3,7 @@
     "blackfriday",
     "cpuguy",
     "Eidt",
+    "GOARCH",
     "gopkg",
     "inconshreveable",
     "jsontools",
