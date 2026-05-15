@@ -12,8 +12,8 @@ import (
 )
 
 var (
-    debugMode bool
-    Version = "0.1.1" // 版本號可以從構建時注入或其他方式獲取
+	debugMode bool
+	Version   = "dev" // 由 goreleaser ldflags 注入：-X main.Version={{.Version}}
 )
 
 
