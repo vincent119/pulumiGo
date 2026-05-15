@@ -1,0 +1,14 @@
+# S3 bucket definition for the TestBucket resource.
+# This bucket is protected from accidental deletion (protect: true).
+resources:
+  TestBucketS3Bucket:
+    type: aws:s3:Bucket
+    properties:
+      bucket: test-bucket
+      # Prevent Pulumi from deleting all objects before destroying the bucket.
+      forceDestroy: false
+    options:
+      providers:
+        - ${AwsDevProvider}
+      # Protect this resource from accidental deletion via pulumi destroy.
+      protect: true

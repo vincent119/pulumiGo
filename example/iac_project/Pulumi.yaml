@@ -1,0 +1,5 @@
+# Pulumi project definition file.
+# Defines the project name, runtime, and description.
+name: iac_project
+runtime: yaml
+description: Infrastructure as code your Project name

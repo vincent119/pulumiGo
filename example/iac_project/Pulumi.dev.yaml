@@ -1,0 +1,8 @@
+# Stack configuration for the 'dev' environment.
+# These values override or extend the base Pulumi.yaml config for this stack.
+organization_name: iac_project
+
+# Default AWS resource tags applied to all resources in this stack.
+aws-default-tags:
+  Environment: dev
+  Project: iac_project

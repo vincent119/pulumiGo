@@ -1,0 +1,26 @@
+# AWS provider definitions for the dev stack.
+# Defines regional providers used by resources in this stack.
+resources:
+  # Primary AWS provider for ap-southeast-1 (Singapore).
+  AwsUatProvider:
+    type: pulumi:providers:aws
+    properties:
+      allowedAccountIds: ["${AwsAccountID}"]
+      region: ap-southeast-1
+    options:
+      ignoreChanges:
+        - profile
+      # Pinned Pulumi AWS SDK version.
+      version: 7.28.0
+
+  # Secondary AWS provider for us-east-1 (Virginia), used for ACM certificates.
+  # ACM certificates for CloudFront must be created in us-east-1.
+  AwsUatAcmProvider:
+    type: pulumi:providers:aws
+    properties:
+      allowedAccountIds: ["${AwsAccountID}"]
+      region: us-east-1
+    options:
+      ignoreChanges:
+        - profile
+      version: 7.28.0

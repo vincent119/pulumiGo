@@ -1,0 +1,33 @@
+# Stack-level variables and cross-stack references for the dev environment.
+resources:
+  # Reference to the global infrastructure stack outputs.
+  iac_Project-global-stack:
+    type: pulumi:pulumi:StackReference
+    properties:
+      name: organization_name/iac_Project/global
+
+  # Reference to the devops stack outputs (e.g. VPC IDs, subnet IDs).
+  devops-stack:
+    type: pulumi:pulumi:StackReference
+    properties:
+      name: organization_name/iac_Project/dev
+
+variables:
+  # Lookup the latest Ubuntu 24.04 LTS AMI from Canonical's official account.
+  # Filters by name pattern and architecture; uses the most recent non-deprecated image.
+  AwsUbuntu24-04-20240822ServerAmi:
+    fn::invoke:
+      function: aws:ec2:getAmi
+      arguments:
+        mostRecent: true
+        includeDeprecated: false
+        filters:
+          - name: name
+            values: ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+          - name: architecture
+            values: ["x86_64"]
+        # Canonical's official AWS account ID.
+        owners:
+          - "099720109477"
+      options:
+        provider: ${AwsDevProvider}
