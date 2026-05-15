@@ -41,7 +41,7 @@ archives:
         formats: [zip]
 
 brews:
-  - name: pulumiGo
+  - name: pulumigo
     repository:
       owner: vincent119
       name: homebrew-tap
