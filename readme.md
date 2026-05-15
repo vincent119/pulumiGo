@@ -1,5 +1,12 @@
 # pulumiGo
 
+[![GitHub](https://img.shields.io/badge/github-vincent119%2FpulumiGo-blue?logo=github)](https://github.com/vincent119/pulumiGo)
+[![License](https://img.shields.io/github/license/vincent119/pulumiGo)](LICENSE)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/vincent119/pulumiGo?logo=go)](go.mod)
+[![Build](https://img.shields.io/github/actions/workflow/status/vincent119/pulumiGo/release.yaml?label=build)](https://github.com/vincent119/pulumiGo/actions/workflows/release.yaml)
+[![Release](https://img.shields.io/github/v/release/vincent119/pulumiGo)](https://github.com/vincent119/pulumiGo/releases/latest)
+[![Stars](https://img.shields.io/github/stars/vincent119/pulumiGo)](https://github.com/vincent119/pulumiGo/stargazers)
+
 Pulumi Go Wrapper - Manage infrastructure with Pulumi.
 
 `pulumiGo` is a tool that enhances Pulumi with additional capabilities. It allows you to manage your infrastructure as code using Pulumi commands while providing extra features for stack management.
