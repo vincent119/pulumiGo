@@ -42,6 +42,7 @@ archives:
 
 brews:
   - name: pulumigo
+    directory: Formula
     repository:
       owner: vincent119
       name: homebrew-tap
