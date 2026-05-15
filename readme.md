@@ -90,3 +90,59 @@ pulumiGo completion zsh > ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/pulumiGo/_p
 # Reload your shell
 source ~/.zshrc
 ```
+
+## Project Structure
+
+`pulumiGo` expects a specific directory layout to manage multi-stack infrastructure. See [`example/iac_project`](example/iac_project) for a working reference.
+
+```
+<project>/
+├── Pulumi.yaml                          # Project definition (name, runtime)
+├── Pulumi.<stack>.yaml                  # Stack config (tags, secrets, env vars)
+├── stack_share_variables/               # Global variables shared across all stacks
+│   └── aws.yaml                         # e.g. AWS account ID, shared constants
+└── stacks/
+    └── <stack>/                         # Per-stack resource definitions
+        └── aws/
+            ├── providers/
+            │   └── aws.yaml             # AWS provider definitions (region, account)
+            ├── private_variables/
+            │   └── variables.yaml       # Stack references and dynamic variables
+            └── <service>/
+                └── <resource>/
+                    └── *.yaml           # Resource definitions (S3, EC2, RDS, etc.)
+```
+
+### How it works
+
+When you run `pulumiGo up` or `pulumiGo preview`, it:
+
+1. Reads the current stack name via `pulumi stack ls`
+2. Merges `resources`, `variables`, and `outputs` from `stacks/<stack>/` into `Pulumi.yaml`
+3. Executes the Pulumi command
+4. Restores `Pulumi.yaml` to its original state (recovery)
+
+This allows you to split large infrastructure definitions across multiple YAML files organized by service, while keeping `Pulumi.yaml` clean.
+
+### The `stacks/` directory
+
+The `stacks/` directory is the **required entry point** for all resource definitions. `pulumiGo` will not function without it.
+
+Each subdirectory under `stacks/<stack>/` is recursively scanned for YAML files. All `resources`, `variables`, and `outputs` blocks found are merged into `Pulumi.yaml` before execution.
+
+```
+stacks/
+└── dev/                        # Must match the active Pulumi stack name
+    └── aws/
+        ├── providers/
+        │   └── aws.yaml        # Provider configuration
+        ├── private_variables/
+        │   └── variables.yaml  # StackReferences and dynamic lookups
+        └── S3/
+            └── TestBucket/
+                └── bucket.yaml # Resource definition
+```
+
+> The stack subdirectory name (e.g. `dev`) must exactly match the active stack selected via `pulumi stack select`.
+
+> For best practices on organizing Pulumi projects and stacks, see the [Pulumi documentation](https://www.pulumi.com/docs/iac/guides/basics/organizing-projects-stacks/).
