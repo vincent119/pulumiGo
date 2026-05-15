@@ -62,6 +62,31 @@ changelog:
       - "^test:"
 
 release:
+  header: |
+    ## What's Changed / 本版本變更
+
+    ### Refactor / 重構
+    - Decoupled WAF regex logic from `LoadYaml` — loader is now a pure I/O function
+      將 WAF 正規表達式邏輯從 `LoadYaml` 分離，載入器現為純 I/O 函式
+    - Unified flag-forwarding helpers across all handlers (`refresh`, `import`, `state`, `config`, `login`)
+      所有 handler 統一改用旗標轉發 helper
+    - Removed per-command flag handling from `executor.go`
+      移除 `executor.go` 中的命令特殊旗標判斷
+    - Replaced `init()` panic with `sync.Once` lazy initialization for `workDir`
+      `workDir` 改用 `sync.Once` lazy 初始化，失敗時回傳 error 而非 panic
+    - Replaced `log` with `zlogger` in executor for consistent logging
+      `executor.go` 日誌統一改用 zlogger
+    - Removed redundant `max`/`min` functions (Go 1.21+ built-ins)
+      移除自訂 `max`/`min`，直接使用 Go 1.21+ 內建版本
+    - Injected version via `ldflags` at build time
+      改由 goreleaser `ldflags` 在 build 時注入版本號
+
+    ### Tests / 測試
+    - Added unit tests for `iac`, `command/handlers`, `command` packages
+      新增 `iac`、`command/handlers`、`command` package 單元測試
+    - Added `cover` target to Makefile for coverage reports
+      Makefile 新增 `cover` 目標產生覆蓋率報告
+
   footer: >-
 
     ---
