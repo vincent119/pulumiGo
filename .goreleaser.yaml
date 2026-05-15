@@ -45,7 +45,7 @@ brews:
     repository:
       owner: vincent119
       name: homebrew-tap
-      token: "{{ .Env.GITHUB_TOKEN }}"
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     homepage: "https://github.com/vincent119/pulumiGo"
     description: "pulumiGo CLI tool"
     install: |
