@@ -42,6 +42,14 @@ brew tap vincent119/tap
 brew install pulumiGo
 ```
 
+### Scoop (Windows)
+
+```openshell
+scoop bucket add vincent https://github.com/vincent119/scoop-bucket
+
+scoop install pulumiGo
+```
+
 ## Build Instructions
 
 ### Build for Mac
