@@ -40,19 +40,34 @@ archives:
       - goos: windows
         formats: [zip]
 
-brews:
+homebrew_casks:
   - name: pulumigo
-    directory: Formula
+    directory: Casks
     repository:
       owner: vincent119
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     homepage: "https://github.com/vincent119/pulumiGo"
     description: "pulumiGo CLI tool"
-    install: |
-      bin.install "pulumiGo"
-    test: |
-      system "#{bin}/pulumiGo", "--version"
+    url:
+      verified: github.com/vincent119/pulumiGo
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/pulumiGo"]
+          end
+
+scoops:
+  - name: pulumiGo
+    directory: bucket
+    repository:
+      owner: vincent119
+      name: scoop-bucket
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    homepage: "https://github.com/vincent119/pulumiGo"
+    description: "A CLI wrapper for Pulumi infrastructure-as-code workflows, written in Go"
+    license: MIT
 
 changelog:
   use: github
