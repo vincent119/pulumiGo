@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.4] - 2026-05-18
+
+### ✨ Added
+
+- **Scoop 支援（Windows）**：可透過 Scoop 安裝 pulumiGo，Windows 使用者不再需要手動下載
+- **Homebrew Cask 支援（macOS）**：改用 Cask 發佈，安裝後自動移除 macOS 隔離屬性，不再需要手動執行 `xattr`
+
+### 🔧 Changed
+
+- Example 專案的 AWS Provider 命名從 `Uat` 統一改為 `Dev`，與 dev stack 環境一致
+
+---
+
+## [v0.1.3] - 2026-05-15
+
+### 🔧 Changed
+
+- Homebrew formula 名稱改為小寫 `pulumigo`，符合 Homebrew 命名規範
+
+---
+
 ## [v0.1.2] - 2026-05-15
 
 ### Refactor / 重構
