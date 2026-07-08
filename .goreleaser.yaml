@@ -40,6 +40,17 @@ archives:
       - goos: windows
         formats: [zip]
 
+brews:
+  - name: pulumigo
+    directory: Formula
+    repository:
+      owner: vincent119
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    homepage: "https://github.com/vincent119/pulumiGo"
+    description: "pulumiGo CLI tool"
+    license: MIT
+
 homebrew_casks:
   - name: pulumigo
     directory: Casks
