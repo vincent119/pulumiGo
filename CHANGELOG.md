@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.5] - 2026-07-08
+
+### Fixed / 修正
+
+- 修正 `pulumiGo up` 等子指令在 Pulumi 底層執行失敗時，Cobra 會額外輸出完整 `Usage:` 與 flags 的問題。
+- 新增 root command 測試，確保執行錯誤只回傳實際錯誤，不再混入 CLI 使用說明。
+
+### Changed / 變更
+
+- README 新增 Windows Scoop 安裝說明，補齊跨平台安裝文件。
+
+---
+
 ## [v0.1.4] - 2026-05-18
 
 ### ✨ Added

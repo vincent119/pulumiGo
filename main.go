@@ -16,39 +16,47 @@ var (
 	Version   = "dev" // 由 goreleaser ldflags 注入：-X main.Version={{.Version}}
 )
 
+func newRootCommand(version string) *cobra.Command {
+	handlers.InitExecuteFunc(command.ExecuteCmd)
+	rootCmd := &cobra.Command{
+		Use:   "pulumiGo [command]",
+		Short: "Pulumi Go Wrapper - Manage infrastructure with Pulumi",
+		Long: fmt.Sprintf("pulumiGo v%s\n\nPulumi Go Wrapper is a tool that enhances Pulumi with additional capabilities.\n"+
+			"It allows you to manage your infrastructure as code using Pulumi commands\n"+
+			"while providing extra features for stack management.", version),
+		SilenceUsage:  true,
+		SilenceErrors: true,
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if debugMode {
+				iac.SetDebugMode(true)
+			}
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// 空情況下顯示幫助訊息
+			if len(args) == 0 {
+				return cmd.Help()
+			}
+			return command.ExecuteCmd(cmd, args)
+		},
+	}
+
+	// Add global flags
+	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug", "d", false, "Enable debug logging")
+
+	// Add all commands to the root command
+	command.AddCommands(rootCmd)
+
+	return rootCmd
+}
 
 func main() {
-    defer zlogger.Sync()
-    handlers.InitExecuteFunc(command.ExecuteCmd)
-    rootCmd := &cobra.Command{
-        Use:   "pulumiGo [command]",
-        Short: "Pulumi Go Wrapper - Manage infrastructure with Pulumi",
-        Long:  fmt.Sprintf("pulumiGo v%s\n\nPulumi Go Wrapper is a tool that enhances Pulumi with additional capabilities.\n"+
-        "It allows you to manage your infrastructure as code using Pulumi commands\n"+
-        "while providing extra features for stack management.", Version),
-        PersistentPreRun: func(cmd *cobra.Command, args []string) {
-            if debugMode {
-                iac.SetDebugMode(true)
-            }
-        },
-        RunE: func(cmd *cobra.Command, args []string) error {
-            // 空情況下顯示幫助訊息
-            if len(args) == 0 {
-                return cmd.Help()
-            }
-            return command.ExecuteCmd(cmd, args)
-        },
-    }
+	defer zlogger.Sync()
 
-    // Add global flags
-    rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug", "d", false, "Enable debug logging")
+	rootCmd := newRootCommand(Version)
 
-    // Add all commands to the root command
-    command.AddCommands(rootCmd)
-
-    // Execute the command
-    if err := rootCmd.Execute(); err != nil {
-        fmt.Fprintln(os.Stderr, err)
-        os.Exit(1)
-    }
+	// Execute the command
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
