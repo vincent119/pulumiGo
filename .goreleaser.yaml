@@ -92,12 +92,10 @@ release:
   header: |
     ## 本版本變更
 
-    ### 修正
-    - 修正 `pulumiGo up` 等子指令在 Pulumi 底層執行失敗時，Cobra 會額外輸出完整 `Usage:` 與 flags 的問題。
-    - 新增 root command 測試，確保執行錯誤只回傳實際錯誤，不再混入 CLI 使用說明。
-
     ### 變更
-    - README 新增 Windows Scoop 安裝說明，補齊跨平台安裝文件。
+    - Go 版本需求更新為 `1.27.4`。
+    - 忽略 Trivy 掃描輸出 `trivy-report.json`。
+    - 新增 Homebrew formula 發布設定。
 
   footer: >-
 

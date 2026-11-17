@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.6] - 2026-11-17
+
+### 變更
+
+- Go 版本需求更新為 `1.27.4`。
+- 忽略 Trivy 掃描輸出 `trivy-report.json`。
+- 新增 Homebrew formula 發布設定。
+
+---
+
 ## [v0.1.5] - 2026-07-08
 
 ### Fixed / 修正
